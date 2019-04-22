@@ -69,18 +69,30 @@ class CustomListView extends StatelessWidget {
             ),
           ),
         ),
-        onTap: () {
-//We start by creating a Page Route.
-//A MaterialPageRoute is a modal route that replaces the entire
-//screen with a platform-adaptive transition.
+        onTap: () { 
+        //We start by creating a Page Route.
+        //A MaterialPageRoute is a modal route that replaces the entire
+        //screen with a platform-adaptive transition.
           var route = new MaterialPageRoute(
             builder: (BuildContext context) =>
                 new SecondScreen(value: spacecraft),
           );
-//A Navigator is a widget that manages a set of child widgets with
-//stack discipline.It allows us navigate pages.
+          //A Navigator is a widget that manages a set of child widgets with
+          //stack discipline.It allows us navigate pages.
           Navigator.of(context).push(route);
         });
+  }
+}
+
+Future<List<Spacecraft>> readJSON(BuildContext context) async {
+  final List jsonFile = jsonDecode(await
+    DefaultAssetBundle.of(context).loadString("assets/spacecrafts.json")
+  );
+
+  if(jsonFile != null) {
+    return jsonFile
+        .map((spacecraft) => new Spacecraft.fromJson(spacecraft))
+        .toList();
   }
 }
 
@@ -124,8 +136,8 @@ class _SecondScreenState extends State<SecondScreen> {
                 padding: EdgeInsets.only(bottom: 20.0),
               ),
               Padding(
-//`widget` is the current configuration. A State object's configuration
-//is the corresponding StatefulWidget instance.
+              //`widget` is the current configuration. A State object's configuration
+              //is the corresponding StatefulWidget instance.
                 child: Image.network('${widget.value.imageUrl}'),
                 padding: EdgeInsets.only(bottom: 8.0),
               ),
@@ -163,13 +175,13 @@ class MyApp extends StatelessWidget {
       home: new Scaffold(
         appBar: new AppBar(title: const Text('JSON Images Text')),
         body: new Center(
-//FutureBuilder is a widget that builds itself based on the latest snapshot
-// of interaction with a Future.
+        //FutureBuilder is a widget that builds itself based on the latest snapshot
+        // of interaction with a Future.
           child: new FutureBuilder<List<Spacecraft>>(
-            future: downloadJSON(),
-//we pass a BuildContext and an AsyncSnapshot object which is an
-//Immutable representation of the most recent interaction with
-//an asynchronous computation.
+            future: readJSON(context),
+            //we pass a BuildContext and an AsyncSnapshot object which is an
+            //Immutable representation of the most recent interaction with
+            //an asynchronous computation.
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 List<Spacecraft> spacecrafts = snapshot.data;
@@ -177,7 +189,7 @@ class MyApp extends StatelessWidget {
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');
               }
-//return  a circular progress indicator.
+              //return  a circular progress indicator.
               return new CircularProgressIndicator();
             },
           ),
